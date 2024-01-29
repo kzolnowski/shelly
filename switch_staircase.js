@@ -1,3 +1,7 @@
+// This script is an extension for Auto Turn Off feature in Shelly settings.
+// On single_push event auto turn off feature is enabled and lights are toggled after CONFIG.toggleTimeout seconds.
+// With long_push event auto turn off feature is disabled and lights are on as long as you want until turning them off :)
+
 let CONFIG = {
   toggleTimeout: 180,
   staircaseInputId: 0,
