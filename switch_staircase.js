@@ -28,7 +28,7 @@ Shelly.call("Switch.SetConfig", {
 });
 
 Shelly.addEventHandler(function (event) {
-  if (typeof event.info.event === "undefined") return;
+  if (typeof event.info.event === "undefined" || event.info.event === "ble.scan_result") return;
   if (event.info.component === "input:" + JSON.stringify(CONFIG.staircaseInputId)) {
     if (event.info.event === "single_push" && !wasOn) {
       Shelly.call(
@@ -40,19 +40,34 @@ Shelly.addEventHandler(function (event) {
         },
         function (result, error_code, error_message) {
           if (error_code === 0) {
-            console.log("Toggle timeout is set to " + CONFIG.toggleTimeout + " seconds");
+            console.log("Toggle timeout is set to " + JSON.stringify(CONFIG.toggleTimeout) + " seconds");
           } else {
             console.log("Error: " + error_message);
           }
+        });
+      }
+      if (event.info.event === "btn_down") {
+        Shelly.call("Switch.Toggle", {id: CONFIG.staircaseSwitchId}, function (result) {
+          wasOn = result.was_on;
+        });
+      }
+    } else if (event.info.component === "input:" + JSON.stringify(CONFIG.hallwayInputId) && event.info.event === "btn_down") {
+      Shelly.call("http.get", { url: CONFIG.actionUrl });
+    } else if (event.info.component === "switch:" + JSON.stringify(CONFIG.staircaseSwitchId) && event.info.event === "toggle" && event.info.state === true) {
+      Shelly.call(
+      "Switch.Set",
+      {
+        id: CONFIG.staircaseSwitchId,
+        on: true,
+        toggle_after: CONFIG.toggleTimeout,
+      },
+      function (result, error_code, error_message) {
+        if (error_code === 0) {
+          console.log("Toggle timeout is set to " + JSON.stringify(CONFIG.toggleTimeout) + " seconds");
+        } else {
+          console.log("Error: " + error_message);
         }
-      );
-    }
-    if (event.info.event === "btn_down") {
-      Shelly.call("Switch.Toggle", {id: CONFIG.staircaseSwitchId}, function (result) {
-        wasOn = result.was_on;
       });
     }
-  } else if (event.info.component === "input:" + JSON.stringify(CONFIG.hallwayInputId) && event.info.event === "btn_down") {
-    Shelly.call("http.get", { url: CONFIG.actionUrl });
   }
-});
+);
