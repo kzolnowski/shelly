@@ -45,6 +45,8 @@ Shelly.addEventHandler(function (event) {
             console.log("Error: " + error_message);
           }
         });
+      } else if (event.info.event === "long_push" && !wasOn) {
+        Shelly.call("Switch.Set", {id: CONFIG.staircaseSwitchId, on: false, toggle_after: 0.1});
       }
       if (event.info.event === "btn_down") {
         Shelly.call("Switch.Toggle", {id: CONFIG.staircaseSwitchId}, function (result) {
