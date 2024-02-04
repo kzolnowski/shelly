@@ -55,21 +55,6 @@ Shelly.addEventHandler(function (event) {
       }
     } else if (event.info.component === "input:" + JSON.stringify(CONFIG.hallwayInputId) && event.info.event === "btn_down") {
       Shelly.call("http.get", { url: CONFIG.actionUrl });
-    } else if (event.info.component === "switch:" + JSON.stringify(CONFIG.staircaseSwitchId) && event.info.event === "toggle" && event.info.state === true) {
-      Shelly.call(
-      "Switch.Set",
-      {
-        id: CONFIG.staircaseSwitchId,
-        on: true,
-        toggle_after: CONFIG.toggleTimeout,
-      },
-      function (result, error_code, error_message) {
-        if (error_code === 0) {
-          console.log("Toggle timeout is set to " + JSON.stringify(CONFIG.toggleTimeout) + " seconds");
-        } else {
-          console.log("Error: " + error_message);
-        }
-      });
     }
   }
 );
